@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il diciottesimo di Carlotta</title>
+<meta name="description" content="Un invito speciale per celebrare il diciottesimo compleanno di Carlotta — 2 febbraio 2027.">
+<meta name="theme-color" content="#5b1a2a">
+
+<!-- Icona semplice coordinata (cuore bordeaux) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%235b1a2a' d='M16 28C16 28 4 20 4 11.5 4 7 7.5 4 11 4c2.2 0 4 1.3 5 3 1-1.7 2.8-3 5-3 3.5 0 7 3 7 7.5C28 20 16 28 16 28z'/%3E%3C/svg%3E">
+
+<!-- Google Fonts, con fallback sicuri dichiarati in CSS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PALETTE E DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bordeaux:      #5b1a2a;
+  --bordeaux-deep: #42111f;
+  --vinaccia:      #6e2438;
+  --vinaccia-soft: #8a3a4e;
+  --rosa-cipria:   #e6c9c4;
+  --avorio:        #f7f1e8;
+  --carta:         #fbf6ee;
+  --champagne:     #c9a86a;
+  --oro-satinato:  #b3965a;
+  --testo-su-scuro:#f3e6da;
+  --ombra-morbida: 0 18px 50px rgba(66,17,31,.28);
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --script: 'Pinyon Script', 'Segoe Script', cursive;
+  --sans: 'Jost', 'Segoe UI', system-ui, sans-serif;
+  --ease-premium: cubic-bezier(.22,.9,.3,1);
+  --dur-apertura: 1.15s;
+  --dur-dissolvenza: .9s;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family: var(--sans);
+  color: var(--bordeaux-deep);
+  background:
+    radial-gradient(120% 90% at 50% 0%, #7d2c40 0%, var(--vinaccia) 38%, var(--bordeaux) 68%, var(--bordeaux-deep) 100%);
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 5vw, 56px);
+  -webkit-font-smoothing: antialiased;
+}
+button{ font-family: inherit; }
+
+/* Texture appena percettibile sulla carta */
+.grain{
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.stage{ position: relative; z-index: 1; width: 100%; max-width: 600px; }
+
+/* Accessibilità: stato nascosto ma non per screen reader */
+.sr-only{
+  position:absolute; width:1px; height:1px; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;
+}
+[hidden]{ display:none !important; }
+
+/* Focus visibile da tastiera */
+:focus-visible{
+  outline: 2px solid var(--champagne);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   SCHERMATA 1 — BUSTA CHIUSA
+   ============================================================ */
+.sealed-view{
+  text-align: center;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .7s var(--ease-premium), transform .7s var(--ease-premium);
+}
+.sealed-view.is-leaving{ opacity: 0; transform: translateY(-14px); }
+
+.sealed-kicker{
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: clamp(.72rem, 2.4vw, .82rem);
+  letter-spacing: .42em;
+  text-transform: uppercase;
+  color: var(--rosa-cipria);
+  margin: 0 0 clamp(22px, 4vw, 34px);
+}
+
+/* --- Busta --- */
+.envelope-scene{
+  perspective: 1400px;
+  display: flex; justify-content: center;
+  margin-bottom: clamp(26px, 5vw, 40px);
+}
+.envelope{
+  position: relative;
+  width: min(340px, 78vw);
+  aspect-ratio: 1.45;
+  filter: drop-shadow(0 22px 34px rgba(40,8,18,.45));
+}
+.envelope-back{
+  position: absolute; inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(160deg, #7c2a3e 0%, var(--bordeaux) 55%, #4a1323 100%);
+}
+.envelope-letter-peek{
+  position: absolute;
+  left: 7%; right: 7%; top: 9%; bottom: 12%;
+  background: var(--carta);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(40,8,18,.25);
+  transition: transform var(--dur-apertura) var(--ease-premium);
+  display: flex; align-items: flex-start; justify-content: center;
+}
+.envelope-letter-peek::before{
+  content:"C";
+  font-family: var(--script);
+  font-size: clamp(2.4rem, 9vw, 3.4rem);
+  color: var(--vinaccia-soft);
+  line-height: 1.6;
+}
+.envelope-pocket{
+  position: absolute; inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(200deg, #8a3348 0%, var(--vinaccia) 45%, var(--bordeaux) 100%);
+  clip-path: polygon(0 32%, 50% 68%, 100% 32%, 100% 100%, 0 100%);
+}
+.envelope-flap{
+  position: absolute; inset: 0;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #93394f 0%, #732739 70%, var(--bordeaux) 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 62%);
+  transform-origin: top center;
+  transition: transform var(--dur-apertura) var(--ease-premium);
+  z-index: 3;
+  backface-visibility: hidden;
+}
+.envelope-seal{
+  position: absolute;
+  left: 50%; top: 58%;
+  transform: translate(-50%,-50%);
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #d9bc84 0%, var(--oro-satinato) 55%, #8f7740 100%);
+  box-shadow: 0 4px 10px rgba(40,8,18,.4), inset 0 1px 2px rgba(255,255,255,.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 4;
+  transition: opacity .5s ease;
+}
+.envelope-seal span{
+  font-family: var(--script);
+  font-size: 1.5rem;
+  color: #5b1a2a;
+  transform: translateY(2px);
+}
+/* Apertura: il lembo si piega all'indietro, la lettera esce */
+.envelope.is-open .envelope-flap{ transform: rotateX(-178deg); z-index: 1; }
+.envelope.is-open .envelope-seal{ opacity: 0; }
+.envelope.is-open .envelope-letter-peek{ transform: translateY(-52%); }
+
+/* --- Pulsante principale --- */
+.btn-open{
+  appearance: none;
+  background: transparent;
+  color: var(--testo-su-scuro);
+  border: 1px solid rgba(230,201,196,.65);
+  border-radius: 999px;
+  padding: 16px 44px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: .82rem;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 52px;
+  transition: background .45s var(--ease-premium), color .45s var(--ease-premium),
+              border-color .45s var(--ease-premium), transform .45s var(--ease-premium);
+}
+.btn-open:hover{
+  background: var(--carta);
+  border-color: var(--carta);
+  color: var(--bordeaux);
+  transform: translateY(-2px);
+}
+.btn-open:active{ transform: translateY(0); }
+
+/* ============================================================
+   SCHERMATA 2 — CARTOLINA COMPLETA
+   ============================================================ */
+.invite-view{
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--dur-dissolvenza) var(--ease-premium), transform var(--dur-dissolvenza) var(--ease-premium);
+  pointer-events: none;
+}
+.invite-view.is-visible{ opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.postcard{
+  position: relative;
+  background:
+    linear-gradient(175deg, #fdf9f2 0%, var(--carta) 60%, #f4ebdd 100%);
+  border-radius: 10px;
+  box-shadow: var(--ombra-morbida);
+  padding: clamp(34px, 7vw, 58px) clamp(22px, 6vw, 52px) clamp(36px, 7vw, 54px);
+  text-align: center;
+  overflow: hidden;
+}
+/* Texture carta */
+.postcard::before{
+  content:"";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  opacity: .045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+/* Cornice sottile */
+.postcard::after{
+  content:"";
+  position: absolute; inset: 12px;
+  border: 1px solid rgba(185,150,90,.4);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* Comparsa progressiva dei testi */
+.reveal{
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .85s var(--ease-premium), transform .85s var(--ease-premium);
+}
+.invite-view.is-visible .reveal{ opacity: 1; transform: translateY(0); }
+.invite-view.is-visible .d1{ transition-delay:.10s }
+.invite-view.is-visible .d2{ transition-delay:.22s }
+.invite-view.is-visible .d3{ transition-delay:.34s }
+.invite-view.is-visible .d4{ transition-delay:.46s }
+.invite-view.is-visible .d5{ transition-delay:.58s }
+.invite-view.is-visible .d6{ transition-delay:.72s }
+.invite-view.is-visible .d7{ transition-delay:.86s }
+.invite-view.is-visible .d8{ transition-delay:.98s }
+.invite-view.is-visible .d9{ transition-delay:1.10s }
+.invite-view.is-visible .d10{ transition-delay:1.24s }
+
+/* Ornamento floreale stilizzato e minimale */
+.flourish{
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; margin: 18px auto; color: var(--oro-satinato);
+}
+.flourish::before,.flourish::after{
+  content:""; height:1px; width: clamp(44px, 14vw, 72px);
+  background: linear-gradient(90deg, transparent, var(--oro-satinato));
+}
+.flourish::after{ background: linear-gradient(90deg, var(--oro-satinato), transparent); }
+.flourish svg{ width: 22px; height: 22px; flex: none; }
+
+/* Tipografia interna alla cartolina */
+.pc-kicker{
+  font-family: var(--sans); font-weight: 400;
+  font-size: clamp(.66rem, 2.2vw, .74rem);
+  letter-spacing: .4em; text-transform: uppercase;
+  color: var(--vinaccia-soft); margin: 0;
+}
+.pc-il-mio{
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(1rem, 3.4vw, 1.25rem);
+  color: #7a5560; margin: 6px 0 0;
+}
+.pc-diciotto{
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(3.4rem, 13vw, 5.2rem);
+  line-height: .95;
+  color: var(--bordeaux);
+  margin: 6px 0 2px;
+}
+.pc-nome{
+  font-family: var(--script);
+  font-size: clamp(2.6rem, 10.5vw, 4rem);
+  line-height: 1.15;
+  color: var(--vinaccia);
+  margin: 0;
+}
+.pc-data{
+  font-family: var(--serif); font-weight: 600;
+  font-size: clamp(1.05rem, 3.8vw, 1.3rem);
+  letter-spacing: .3em; text-indent: .3em;
+  color: var(--bordeaux); margin: 14px 0 0;
+}
+.pc-frase{
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(1rem, 3.4vw, 1.15rem);
+  color: #6d4650; margin: 18px 0 0;
+}
+.pc-loc-label{
+  font-family: var(--sans); font-weight: 500;
+  font-size: clamp(.62rem, 2vw, .7rem);
+  letter-spacing: .34em; text-transform: uppercase;
+  color: var(--oro-satinato); margin: 26px 0 0;
+}
+.pc-loc{
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 3.6vw, 1.25rem);
+  color: var(--bordeaux); margin: 6px 0 0;
+}
+.pc-nota{
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(.95rem, 3.2vw, 1.05rem);
+  color: #7a5560;
+  max-width: 38ch; margin: 24px auto 0;
+}
+
+/* ============================================================
+   SEZIONE RSVP
+   ============================================================ */
+.rsvp{
+  margin-top: clamp(30px, 6vw, 44px);
+  text-align: center;
+}
+.rsvp h2{
+  font-family: var(--sans); font-weight: 500;
+  font-size: clamp(.78rem, 2.6vw, .88rem);
+  letter-spacing: .4em; text-indent: .4em; text-transform: uppercase;
+  color: var(--rosa-cipria); margin: 0 0 20px;
+}
+.rsvp-buttons{
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+}
+.btn{
+  appearance: none; cursor: pointer;
+  border-radius: 999px;
+  padding: 15px 34px;
+  min-height: 52px; min-width: 150px;
+  font-family: var(--sans); font-weight: 500;
+  font-size: .78rem; letter-spacing: .24em; text-transform: uppercase;
+  transition: background .4s var(--ease-premium), color .4s var(--ease-premium),
+              border-color .4s var(--ease-premium), transform .3s var(--ease-premium);
+}
+.btn:active{ transform: translateY(1px); }
+.btn-yes{
+  background: linear-gradient(160deg, var(--vinaccia) 0%, var(--bordeaux) 100%);
+  color: var(--testo-su-scuro);
+  border: 1px solid var(--vinaccia);
+  box-shadow: 0 8px 22px rgba(66,17,31,.35);
+}
+.btn-yes:hover{ background: var(--bordeaux-deep); border-color: var(--bordeaux-deep); }
+.btn-no{
+  background: rgba(247,241,232,.08);
+  color: var(--rosa-cipria);
+  border: 1px solid rgba(230,201,196,.7);
+}
+.btn-no:hover{ background: var(--carta); color: var(--bordeaux); border-color: var(--carta); }
+
+/* Conferma risposta */
+.rsvp-confirm{ margin-top: 4px; }
+.rsvp-message{
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(1.05rem, 3.6vw, 1.2rem);
+  color: var(--testo-su-scuro); margin: 0 0 20px;
+}
+.btn-whatsapp{
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--carta); color: var(--bordeaux);
+  border: 1px solid var(--carta);
+  text-decoration: none;
+}
+.btn-whatsapp:hover{ background: var(--rosa-cipria); border-color: var(--rosa-cipria); }
+.btn-whatsapp svg{ width: 18px; height: 18px; }
+.link-modify{
+  display: block; margin: 16px auto 0;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--sans); font-weight: 300;
+  font-size: .68rem; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(230,201,196,.85);
+  text-decoration: underline; text-underline-offset: 4px;
+  transition: color .35s ease;
+}
+.link-modify:hover{ color: var(--carta); }
+.rsvp-warning{
+  margin: 14px auto 0; max-width: 44ch;
+  font-size: .78rem; font-weight: 300; line-height: 1.5;
+  color: #f0c9b8; letter-spacing: .04em;
+}
+
+/* ============================================================
+   UTILITÀ EXTRA + REVIEW
+   ============================================================ */
+.utility{
+  margin-top: clamp(26px, 5vw, 36px);
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+.btn-ghost{
+  background: transparent;
+  border: 1px solid rgba(230,201,196,.45);
+  color: var(--rosa-cipria);
+  min-width: 0; padding: 11px 22px; min-height: 44px;
+  font-size: .66rem; letter-spacing: .26em;
+}
+.btn-ghost:hover{ background: rgba(247,241,232,.1); border-color: rgba(230,201,196,.85); }
+.copy-feedback{
+  margin: 12px 0 0; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--champagne); opacity: 0; transition: opacity .4s ease;
+}
+.copy-feedback.show{ opacity: 1; }
+
+.replay{
+  display: block; margin: clamp(28px, 6vw, 40px) auto 0;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--sans); font-weight: 300;
+  font-size: .66rem; letter-spacing: .32em; text-transform: uppercase;
+  color: rgba(230,201,196,.6);
+  transition: color .35s ease;
+}
+.replay:hover{ color: var(--rosa-cipria); }
+
+
+/* ============================================================
+   STICKER DECORATIVI — die-cut con bordo avorio, toni bordeaux
+   ============================================================ */
+.sticker{
+  position: absolute; z-index: 3; pointer-events: none;
+  opacity: 0; transform: translateY(12px) rotate(0deg) scale(.94);
+  transition: opacity .85s var(--ease-premium), transform .85s var(--ease-premium);
+}
+.invite-view.is-visible .sticker{ opacity: 1; }
+.invite-view.is-visible .st-tr{ transform: translateY(0) rotate(8deg)  scale(1); transition-delay:.5s; }
+.invite-view.is-visible .st-tl{ transform: translateY(0) rotate(-10deg) scale(1); transition-delay:.42s; }
+.invite-view.is-visible .st-bl{ transform: translateY(0) rotate(-8deg) scale(1); transition-delay:.62s; }
+.invite-view.is-visible .st-br{ transform: translateY(0) rotate(4deg)  scale(1); transition-delay:.74s; }
+
+/* Effetto sticker ritagliato: fondo avorio + ombra morbida */
+.sticker-round{
+  top: -14px; right: 6px;
+  background: var(--carta);
+  padding: 7px;
+  border-radius: 50%;
+  box-shadow: 0 10px 22px rgba(66,17,31,.3);
+}
+.sticker-round-inner{
+  width: clamp(64px, 17vw, 84px); height: clamp(64px, 17vw, 84px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, var(--vinaccia-soft) 0%, var(--vinaccia) 45%, var(--bordeaux-deep) 100%);
+  border: 2px solid rgba(201,168,106,.55);
+  box-shadow: inset 0 2px 6px rgba(255,255,255,.18);
+  display: flex; align-items: center; justify-content: center;
+}
+.sticker-round-inner span{
+  font-family: var(--serif); font-weight: 600;
+  font-size: clamp(1.7rem, 5vw, 2.2rem);
+  color: var(--carta);
+  transform: translateY(-2px);
+}
+
+/* Ramo floreale stilizzato */
+.st-bl{ bottom: 10px; left: 8px; }
+.st-bl svg{
+  display: block;
+  width: clamp(74px, 20vw, 104px); height: auto;
+  filter: drop-shadow(0 8px 16px rgba(66,17,31,.28));
+}
+
+/* Cuoricino */
+.st-tl{ top: 16px; left: 16px; }
+.st-heart{
+  background: var(--carta);
+  padding: 6px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(66,17,31,.25);
+}
+.st-heart svg{ display: block; width: clamp(22px, 6vw, 28px); height: auto; }
+
+/* Etichetta "save the date" */
+.st-br{ bottom: 22px; right: 12px; }
+.st-tag{
+  background: linear-gradient(160deg, var(--vinaccia) 0%, var(--bordeaux) 100%);
+  border: 1px solid rgba(201,168,106,.55);
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(66,17,31,.3);
+  padding: 8px 16px;
+}
+.st-tag span{
+  font-family: var(--sans); font-weight: 500;
+  font-size: clamp(.56rem, 1.9vw, .64rem);
+  letter-spacing: .3em; text-transform: uppercase;
+  color: var(--rosa-cipria);
+}
+
+/* Su schermi piccoli gli sticker restano dentro la cartolina */
+@media (max-width: 420px){
+  .st-tr{ top: -10px; right: 2px; }
+  .st-bl{ bottom: 8px; left: 4px; }
+  .st-br{ bottom: 16px; right: 8px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .sticker{ opacity: 1; transform: none; }
+  .st-tr{ transform: rotate(8deg); } .st-tl{ transform: rotate(-10deg); }
+  .st-bl{ transform: rotate(-8deg); } .st-br{ transform: rotate(4deg); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 420px){
+  .rsvp-buttons .btn{ width: 100%; }
+  .postcard::after{ inset: 9px; }
+}
+
+/* ============================================================
+   MOVIMENTO RIDOTTO
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+  .reveal{ opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   STAMPA / PDF — solo la cartolina, senza controlli
+   ============================================================ */
+@media print{
+  body{ background: #fff; padding: 0; display: block; }
+  .grain, .sealed-view, .rsvp, .utility, .replay{ display: none !important; }
+  .stage{ max-width: 100%; }
+  .invite-view{ opacity: 1 !important; transform: none !important; pointer-events: auto; }
+  .reveal{ opacity: 1 !important; transform: none !important; transition: none !important; }
+  .postcard{ box-shadow: none; border: 1px solid #ddd; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<main class="stage">
+
+  <!-- ============ SCHERMATA 1: BUSTA CHIUSA ============ -->
+  <section class="sealed-view" id="sealedView" aria-label="Invito chiuso">
+    <p class="sealed-kicker">Un invito speciale per te</p>
+
+    <div class="envelope-scene">
+      <div class="envelope" id="envelope">
+        <div class="envelope-back"></div>
+        <div class="envelope-letter-peek" aria-hidden="true"></div>
+        <div class="envelope-pocket"></div>
+        <div class="envelope-flap" id="envelopeFlap"></div>
+        <div class="envelope-seal" id="envelopeSeal" aria-hidden="true"><span>C</span></div>
+      </div>
+    </div>
+
+    <button class="btn-open" id="btnOpen" type="button">Apri il tuo invito</button>
+  </section>
+
+  <!-- ============ SCHERMATA 2: CARTOLINA + RSVP ============ -->
+  <section class="invite-view" id="inviteView" aria-label="Invito di Carlotta" hidden>
+
+    <article class="postcard" id="postcard">
+      <!-- Sticker: sigillo tondo con 18 -->
+      <div class="sticker sticker-round st-tr" aria-hidden="true">
+        <div class="sticker-round-inner"><span>18°</span></div>
+      </div>
+
+      <!-- Sticker: cuoricino -->
+      <div class="sticker st-heart st-tl" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path fill="#5b1a2a" d="M16 28C16 28 4 20 4 11.5 4 7 7.5 4 11 4c2.2 0 4 1.3 5 3 1-1.7 2.8-3 5-3 3.5 0 7 3 7 7.5C28 20 16 28 16 28z"/></svg>
+      </div>
+
+      <!-- Sticker: ramo floreale stilizzato -->
+      <div class="sticker st-bl" aria-hidden="true">
+        <svg viewBox="0 0 120 130" fill="none" stroke-linecap="round">
+          <path d="M60 122 C 58 96, 62 66, 60 34" stroke="#5b1a2a" stroke-width="3"/>
+          <path d="M60 98 C 45 92, 34 80, 36 66 C 52 68, 60 82, 60 98 Z" fill="#6e2438"/>
+          <path d="M60 76 C 77 70, 88 56, 86 42 C 68 44, 60 58, 60 76 Z" fill="#8a3a4e"/>
+          <path d="M60 56 C 47 51, 40 40, 42 28 C 56 30, 60 42, 60 56 Z" fill="#6e2438"/>
+          <path d="M60 34 m-14 0 a14 14 0 1 0 28 0 a11 11 0 1 1 -22 0 a7.5 7.5 0 1 0 15 0 a4 4 0 1 1 -8 0" stroke="#5b1a2a" stroke-width="3"/>
+          <circle cx="60" cy="34" r="2.4" fill="#c9a86a" stroke="none"/>
+        </svg>
+      </div>
+
+      <!-- Sticker: save the date -->
+      <div class="sticker st-tag st-br" aria-hidden="true"><span>Save the date</span></div>
+      <p class="pc-kicker reveal d1">Sei invitato a celebrare</p>
+      <p class="pc-il-mio reveal d2">il mio</p>
+      <p class="pc-diciotto reveal d3">18°</p>
+      <h1 class="pc-nome reveal d4">Carlotta</h1>
+
+      <div class="flourish reveal d5" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M12 21C7 17 4 13.5 4 9.5 4 6.5 6 4.5 8.5 4.5c1.5 0 2.7.8 3.5 2 .8-1.2 2-2 3.5-2C18 4.5 20 6.5 20 9.5c0 4-3 7.5-8 11.5z"/>
+          <path d="M12 21V10"/>
+        </svg>
+      </div>
+
+      <p class="pc-data reveal d6">2 febbraio 2027</p>
+      <p class="pc-frase reveal d7">Una serata speciale da condividere con le persone che amo.</p>
+
+      <p class="pc-loc-label reveal d8">Location da confermare</p>
+      <p class="pc-loc reveal d8">Probabilmente Villa San Nicola, Palermo</p>
+
+      <p class="pc-nota reveal d9">Mi farebbe davvero piacere averti con me per festeggiare questo giorno speciale.</p>
+    </article>
+
+    <!-- RSVP -->
+    <section class="rsvp" aria-label="Conferma presenza">
+      <h2 class="reveal d10">Ci sarai?</h2>
+
+      <div class="rsvp-buttons" id="rsvpButtons">
+        <button class="btn btn-yes" id="btnYes" type="button">Ci sarò!</button>
+        <button class="btn btn-no" id="btnNo" type="button">purtroppo no</button>
+      </div>
+
+      <div class="rsvp-confirm" id="rsvpConfirm" hidden>
+        <p class="rsvp-message" id="rsvpMessage"></p>
+        <a class="btn btn-whatsapp" id="btnWhatsApp" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4 0-.5.1-.7l.4-.5c.1-.2.1-.4 0-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2.2-.2 3.9a11.6 11.6 0 0 0 4.5 4.2c1.7.8 2.4.9 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.5-.3z"/>
+          </svg>
+          Invia la risposta a Carlotta
+        </a>
+        <p class="rsvp-warning" id="rsvpWarning" hidden></p>
+        <button class="link-modify" id="btnModify" type="button">Modifica risposta</button>
+      </div>
+    </section>
+
+    <!-- Utility secondarie -->
+    <div class="utility reveal d10">
+      <button class="btn btn-ghost" id="btnCalendar" type="button">Aggiungi al calendario</button>
+      <button class="btn btn-ghost" id="btnCopy" type="button">Copia invito</button>
+      <p class="copy-feedback" id="copyFeedback" role="status">Invito copiato negli appunti</p>
+    </div>
+
+    <button class="replay" id="btnReplay" type="button">&#8592;&nbsp; Rivedi l&#8217;apertura</button>
+  </section>
+
+</main>
+
+<script>
+/* ================================================================
+   CONFIGURAZIONE — NUMERO DI CARLOTTA
+   ----------------------------------------------------------------
+   >>> SOSTITUISCI IL VALORE SOTTO CON IL NUMERO REALE DI CARLOTTA
+   >>> In formato internazionale, SENZA "+" e SENZA spazi.
+   >>> Esempio per l'Italia: "393312345678"
+   >>> Il numero è configurato: il pulsante WhatsApp è attivo.
+   ================================================================ */
+const CARLOTTA_PHONE = "393517655618";
+
+/* Testi dei messaggi WhatsApp */
+const MSG_YES = "Ciao Carlotta! ❤️ Confermo con piacere la mia presenza al tuo diciottesimo del 2 febbraio 2027. Non vedo l'ora!";
+const MSG_NO  = "Ciao Carlotta ❤️ Purtroppo non potrò essere presente al tuo diciottesimo del 2 febbraio 2027. Mi dispiace e ti auguro una bellissima festa!";
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Riferimenti agli elementi */
+const sealedView = document.getElementById('sealedView');
+const inviteView = document.getElementById('inviteView');
+const envelope   = document.getElementById('envelope');
+const btnOpen    = document.getElementById('btnOpen');
+const btnReplay  = document.getElementById('btnReplay');
+
+/* ============ 1. APERTURA DELLA CARTOLINA ============ */
+function openInvite(){
+  if (inviteView.classList.contains('is-visible')) return;
+  btnOpen.disabled = true;
+
+  // Animazione della busta (salta se l'utente preferisce meno movimento)
+  const flapDelay = prefersReducedMotion ? 0 : 60;
+  setTimeout(() => envelope.classList.add('is-open'), flapDelay);
+
+  const transitionMs = prefersReducedMotion ? 50 : 1250; // attesa = apertura lembo + uscita lettera
+
+  setTimeout(() => {
+    sealedView.classList.add('is-leaving');
+    setTimeout(() => {
+      sealedView.hidden = true;
+      inviteView.hidden = false;
+      // Forza reflow, poi attiva la dissolvenza della cartolina
+      void inviteView.offsetWidth;
+      inviteView.classList.add('is-visible');
+      document.getElementById('postcard').setAttribute('tabindex','-1');
+      document.getElementById('postcard').focus({ preventScroll: true });
+    }, prefersReducedMotion ? 20 : 650);
+  }, transitionMs);
+}
+btnOpen.addEventListener('click', openInvite);
+
+/* ============ 2. REVISIONE DELL'APERTURA ============ */
+btnReplay.addEventListener('click', () => {
+  inviteView.classList.remove('is-visible');
+  setTimeout(() => {
+    inviteView.hidden = true;
+    sealedView.hidden = false;
+    envelope.classList.remove('is-open');
+    void sealedView.offsetWidth;
+    sealedView.classList.remove('is-leaving');
+    btnOpen.disabled = false;
+    btnOpen.focus();
+  }, prefersReducedMotion ? 20 : 500);
+});
+
+/* ============ 3. RSVP: SELEZIONE, CONFERMA, MODIFICA ============ */
+const btnYes      = document.getElementById('btnYes');
+const btnNo       = document.getElementById('btnNo');
+const rsvpButtons = document.getElementById('rsvpButtons');
+const rsvpConfirm = document.getElementById('rsvpConfirm');
+const rsvpMessage = document.getElementById('rsvpMessage');
+const rsvpWarning = document.getElementById('rsvpWarning');
+const btnWhatsApp = document.getElementById('btnWhatsApp');
+const btnModify   = document.getElementById('btnModify');
+
+function selectResponse(isYes){
+  rsvpButtons.hidden = true;
+  rsvpConfirm.hidden = false;
+  rsvpWarning.hidden = true;
+
+  rsvpMessage.textContent = isYes
+    ? 'Che bello, grazie per aver confermato! ❤️'
+    : 'Mi dispiace che tu non possa esserci, ma grazie per avermi risposto. ❤️';
+
+  // Prepara il link WhatsApp con il messaggio corretto
+  const message = isYes ? MSG_YES : MSG_NO;
+  if (CARLOTTA_PHONE.indexOf('X') !== -1 || CARLOTTA_PHONE.trim() === '') {
+    // Numero non configurato: nessun link, solo avviso chiaro
+    btnWhatsApp.removeAttribute('href');
+    btnWhatsApp.dataset.disabled = 'true';
+    rsvpWarning.hidden = false;
+    rsvpWarning.textContent = 'Numero di Carlotta non ancora configurato: inseriscilo nel codice (cerca CARLOTTA_PHONE) per abilitare l\u2019invio su WhatsApp.';
+  } else {
+    btnWhatsApp.dataset.disabled = 'false';
+    btnWhatsApp.href = 'https://wa.me/' + CARLOTTA_PHONE + '?text=' + encodeURIComponent(message);
+  }
+}
+btnYes.addEventListener('click', () => selectResponse(true));
+btnNo.addEventListener('click', () => selectResponse(false));
+
+// L'invio avviene solo dentro WhatsApp: se il numero manca, blocca il clic
+btnWhatsApp.addEventListener('click', (e) => {
+  if (btnWhatsApp.dataset.disabled === 'true') { e.preventDefault(); }
+});
+
+btnModify.addEventListener('click', () => {
+  rsvpConfirm.hidden = true;
+  rsvpButtons.hidden = false;
+  btnYes.focus();
+});
+
+/* ============ 4. AGGIUNGI AL CALENDARIO (.ics) ============ */
+const btnCalendar = document.getElementById('btnCalendar');
+
+btnCalendar.addEventListener('click', () => {
+  const now = new Date();
+  const stamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const uid = 'carlotta-18-' + Date.now() + '@invito';
+
+  // Evento di intera giornata: DTEND è esclusivo, quindi giorno successivo
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Il diciottesimo di Carlotta//IT',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'DTSTAMP:' + stamp,
+    'DTSTART;VALUE=DATE:20270202',
+    'DTEND;VALUE=DATE:20270203',
+    'SUMMARY:Il diciottesimo di Carlotta',
+    'DESCRIPTION:Una serata speciale da condividere con le persone che amo.\\nLocation provvisoria da confermare: probabilmente Villa San Nicola\\, Palermo.',
+    'LOCATION:Da confermare (probabilmente Villa San Nicola\\, Palermo)',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT3H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Il diciottesimo di Carlotta',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'diciottesimo-carlotta.ics';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+});
+
+/* ============ 5. COPIA INVITO ============ */
+const btnCopy      = document.getElementById('btnCopy');
+const copyFeedback = document.getElementById('copyFeedback');
+
+const INVITE_TEXT = [
+  'Sei invitato a celebrare il mio 18°',
+  'Carlotta',
+  '2 febbraio 2027',
+  'Una serata speciale da condividere con le persone che amo.',
+  'Location da confermare — probabilmente Villa San Nicola, Palermo',
+  'Mi farebbe davvero piacere averti con me per festeggiare questo giorno speciale.'
+].join('\n');
+
+let copyTimer = null;
+btnCopy.addEventListener('click', async () => {
+  let ok = false;
+  try {
+    await navigator.clipboard.writeText(INVITE_TEXT);
+    ok = true;
+  } catch (err) {
+    // Fallback per browser più datati
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = INVITE_TEXT;
+      ta.setAttribute('readonly','');
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      ok = document.execCommand('copy');
+      ta.remove();
+    } catch (e2) { ok = false; }
+  }
+  if (ok) {
+    copyFeedback.classList.add('show');
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => copyFeedback.classList.remove('show'), 2400);
+  }
+});
+</script>
+</body>
+</html>
